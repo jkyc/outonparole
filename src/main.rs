@@ -554,7 +554,7 @@ impl Game {
         self.p.moving = mv.length() > 0.1;
         if self.p.moving { mv = mv.normalize(); }
         self.p.aim = is_mouse_button_down(MouseButton::Right);
-        let mut sp = if self.p.crouch { 1.8 } else if is_key_down(KeyCode::LeftShift) { 7.0 } else { 3.9 };
+        let mut sp: f32 = if self.p.crouch { 1.8 } else if is_key_down(KeyCode::LeftShift) { 7.0 } else { 3.9 };
         if self.p.aim { sp = sp.min(2.8); }
         let step = mv * sp * dt;
         for axis in 0..2 {
@@ -906,12 +906,12 @@ impl Game {
                 Ps::Walk => {
                     p.t -= dt;
                     if p.t <= 0.0 { p.yaw += rf(-1.2, 1.2); p.t = rf(1.5, 5.0); if chance(0.25) { p.st = Ps::Idle; p.t = rf(2.0, 5.0); } }
-                    self.ped_step(&mut p, fwd(p.yaw), 1.4, dt, true);
+                    let dir = fwd(p.yaw); self.ped_step(&mut p, dir, 1.4, dt, true);
                 }
                 Ps::Idle => { p.t -= dt; if p.t <= 0.0 { p.st = Ps::Walk; p.t = rf(2.0, 4.0); } }
                 Ps::Flee => {
                     p.t -= dt;
-                    self.ped_step(&mut p, fwd(p.yaw), 6.0, dt, false);
+                    let dir = fwd(p.yaw); self.ped_step(&mut p, dir, 6.0, dt, false);
                     if p.t <= 0.0 { p.st = Ps::Walk; p.t = 2.0; }
                 }
                 Ps::Cower => { p.t -= dt; if p.t <= 0.0 { p.st = Ps::Walk; p.t = 2.0; } }
